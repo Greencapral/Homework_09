@@ -11,6 +11,7 @@
             <div class="list-group-item">
                 <h5>{{ category.name }}</h5>
                 <h6>Описание категории: {{ category.description }}</h6>
+                <a href="{% url 'category_edit' category.id %}" class="btn btn-warning">Редактировать</a>
             </div>
         </div>
     {% empty %}

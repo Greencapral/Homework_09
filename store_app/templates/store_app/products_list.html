@@ -14,9 +14,10 @@
                 <p class="card-text">
                 <p>Категория товара: {{ product.category }}</p>
                 <p>Цена за единицу: {{ product.price }}</p>
-                <a class="nav-link active" aria-current="page" href="{% url 'product_detail' product.id %}">
-                    <button type="button" class="btn btn-outline-info">Подробнее</button>
-                </a>
+                <div class="d-flex gap-3" role="group">
+                  <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-info">Подробнее</a>
+                  <a href="{% url 'product_edit' product.id %}" class="btn btn-warning">Редактировать</a>
+                </div>
             </div>
         </div>
     {% empty %}
