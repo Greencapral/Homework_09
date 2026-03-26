@@ -11,59 +11,34 @@
     <nav>
         <ul class="nav">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная страница</a>
+                <a class="nav-link active" aria-current="page" href="">Главная страница</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'products_list' %}">Список товаров</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'categories_list' %}">Список категорий</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'product_add' %}">Добавить товар</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'category_add' %}">Добавить категорию</a>
-            </li>
-            <li class="nav-item">
-                {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link"  class="nav-link">Выйти ({{ user.email }})</a>
-                    </form>
-                {% else %}
-                    <a class="nav-link" href="{% url 'login' %}" class="nav-link">Авторизоваться</a>
-                {% endif %}
+                <a class="nav-link" href="{% url 'login' %}">Авторизоваться</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'register' %}">Зарегистрироваться</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">О проекте</a>
+                <a class="nav-link" href="{% url 'register' %}">Выйти</a>
             </li>
             <li class="nav-item">
-                {% if user.email %}
-                    <a class="nav-link disabled">Здравствуйте, {{ user.email }}!</a>
-                {% else %}
-                    <a class="nav-link disabled">Добро пожаловать, советую авторизоваться!</a>
-                {% endif %}
-                <a class="nav-link disabled" aria-disabled="true"></a>
+                <a class="nav-link disabled" aria-disabled="true">...</a>
             </li>
         </ul>
     </nav>
 
 
     {% block header %}
-        <title>Домашка по Django</title>
+        <title>Домашка FasAPI</title>
     {% endblock %}
 </head>
 <body>
 
-    <div class="container mt-4">
-      {% block body %}
+{% block body %}
 
-      {% endblock %}
-    </div>
+{% endblock %}
+
 
 </body>
 

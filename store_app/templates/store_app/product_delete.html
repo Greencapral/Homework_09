@@ -1,0 +1,16 @@
+{% extends 'store_app/base.html' %}
+
+{% block header %}
+    <title>Удаление карточки товара</title>
+{% endblock %}
+
+{% block body %}
+    <h1>Удаление карточки товара</h1>
+    <p>Вы точно хотите удалить товар? '{{ product.name }}'?</p>
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+    <a href="{% url 'products_list' %}" class="btn btn-secondary mt-3">Отмена</a>
+{% endblock %}

@@ -81,31 +81,29 @@ wheels = [
 ]
 
 [[package]]
-name = "homework-06"
+name = "homework-07"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
+    { name = "faker" },
     { name = "python-dotenv" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "black" },
-    { name = "faker" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = ">=6.0.2" },
+    { name = "faker", specifier = ">=40.8.0" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "black", specifier = ">=26.1.0" },
-    { name = "faker", specifier = ">=40.8.0" },
-]
+dev = [{ name = "black", specifier = ">=26.1.0" }]
 
 [[package]]
 name = "mypy-extensions"

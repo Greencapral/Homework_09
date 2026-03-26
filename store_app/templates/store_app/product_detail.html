@@ -10,6 +10,7 @@
     <h2 class="h6">Описание товара: {{ product.description }}</h2>
     <h2 class="h6">Стоимость за единицу: {{ product.price }}</h2>
     <a href="{% url 'products_list' %}" class="btn btn-secondary mt-3">Назад к списку</a>
+    <a href="{% url 'product_delete' product.id %}" class="btn btn-warning">Удалить карточку товара</a>
 
 {% endblock %}
 

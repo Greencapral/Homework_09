@@ -4,17 +4,27 @@ from django.shortcuts import (
     get_object_or_404,
 )
 from django.http import HttpResponse
-from store_app.forms import ProductForm, CategoryForm
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+from django.urls import reverse_lazy
+from store_app.forms import (
+    ProductForm,
+    CategoryForm,
+    ProductDeleteForm,
+)
 from store_app.models import Product, Category
 
 
 def index(request):
     """
-    Отображает главную страницу интернет‑магазина.
-
+    Отображает главную страницу веб‑приложения.
     Args:
         request (HttpRequest): HTTP‑запрос от клиента.
-
     Returns:
         HttpResponse: Отрендеренный шаблон главной страницы.
     """
@@ -23,150 +33,118 @@ def index(request):
 
 def about(request):
     """
-    Отображает страницу «О нас» с информацией о магазине.
-
+    Отображает страницу «О проекте» веб‑приложения.
     Args:
         request (HttpRequest): HTTP‑запрос от клиента.
-
     Returns:
         HttpResponse: Отрендеренный шаблон страницы «О нас».
     """
     return render(request, "store_app/about_page.html")
 
 
-def products_list(request):
+class ProductBaseView:
     """
-    Отображает список всех товаров в магазине.
-
-    Получает все объекты Product из базы данных и передаёт их в шаблон
-    для отображения в виде списка.
-
-    Args:
-        request (HttpRequest): HTTP‑запрос от клиента.
-
-    Returns:
-        HttpResponse: Отрендеренный шаблон со списком товаров.
+    Базовый класс для представлений, связанных с товарами.
+    Определяет общую модель для всех представлений товаров.
     """
-    products = Product.objects.all()
-    context = {
-        "products": products,
-    }
-    return render(
-        request,
-        "store_app/products_list.html",
-        context=context,
+
+    model = Product  # Модель товара, используемая во всех наследниках
+
+
+class ProductListView(ProductBaseView, ListView):
+    """
+    Представление для отображения списка всех товаров.
+    """
+
+    context_object_name = (
+        "products"  # Ключ в контексте для списка товаров
     )
 
 
-def product_detail(request, product_id):
+class ProductDetailView(ProductBaseView, DetailView):
     """
-    Отображает подробную информацию о конкретном товаре.
+    Представление для отображения подробной информации о конкретном товаре.
 
-    Ищет товар по ID. Если товар не найден, возвращает ошибку 404.
-
-    Args:
-        request (HttpRequest): HTTP‑запрос от клиента.
-        product_id (int): ID товара в базе данных.
-
-    Returns:
-        HttpResponse: Отрендеренный шаблон с деталями товара.
     """
-    product = get_object_or_404(Product, id=product_id)
-    context = {
-        "product": product,
-    }
-    return render(
-        request,
-        "store_app/product_detail.html",
-        context=context,
+
+    context_object_name = (
+        "product"  # Ключ в контексте для объекта товара
     )
 
 
-def product_add(request):
+class ProductCreateView(ProductBaseView, CreateView):
     """
-    Обрабатывает добавление нового товара через форму.
+    Представление для создания нового товара.
 
-    Если метод запроса — POST и форма валидна, сохраняет новый товар
-    и перенаправляет на страницу списка товаров. В противном случае отображает
-    пустую форму для заполнения.
-
-    Args:
-        request (HttpRequest): HTTP‑запрос от клиента.
-
-    Returns:
-        HttpResponse: Отрендеренный шаблон формы добавления товара или
-        перенаправление на список товаров.
+    Использует форму ProductForm и перенаправляет на список товаров после успешного создания.
     """
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("products_list")
-    else:
-        form = ProductForm()
-    context = {
-        "title": "Добавление нового товара",
-        "button_name": "Добавить товар",
-        "form": form,
-    }
-    return render(
-        request,
-        "store_app/add_or_edit_prod_or_cat.html",
-        context=context,
+
+    template_name = "store_app/add_or_edit_prod_or_cat.html"  # Шаблон для создания товара
+    context_object_name = (
+        "product"  # Ключ в контексте для объекта товара
     )
-
-
-def product_edit(request, product_id):
-    """
-    Обрабатывает редактирование существующего товара.
-
-    Получает товар по ID, отображает форму с его данными. При отправке POST‑запроса
-    с валидными данными сохраняет изменения и перенаправляет на список товаров.
-
-    Args:
-        request (HttpRequest): HTTP‑запрос от клиента.
-        product_id (int): ID редактируемого товара.
-
-    Returns:
-        HttpResponse: Отрендеренный шаблон формы редактирования товара или
-        перенаправление на список товаров.
-    """
-    product = get_object_or_404(Product, id=product_id)
-    if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
-        if form.is_valid():
-            form.save()
-            return redirect("products_list")
-    else:
-        form = ProductForm(instance=product)
-    context = {
-        "title": "Изменение карточки товара",
-        "button_name": "Сохранить изменения",
-        "form": form,
+    form_class = ProductForm  # Форма для создания товара
+    extra_context = {
+        "title": "Добавление нового товара",  # Заголовок страницы
+        "button_name": "Добавить товар",  # Текст на кнопке отправки формы
     }
-    return render(
-        request,
-        "store_app/add_or_edit_prod_or_cat.html",
-        context=context,
+    success_url = reverse_lazy(
+        "products_list"
+    )  # URL для перенаправления после успешного создания
+
+
+class ProductUpdateView(ProductBaseView, UpdateView):
+    """
+    Представление для редактирования существующего товара.
+
+    Использует форму ProductForm и перенаправляет на список товаров после успешного обновления.
+    """
+
+    template_name = "store_app/add_or_edit_prod_or_cat.html"  # Шаблон для редактирования товара
+    context_object_name = (
+        "product"  # Ключ в контексте для объекта товара
     )
+    form_class = (
+        ProductForm  # Форма для редактирования товара
+    )
+    extra_context = {
+        "title": "Изменение карточки товара",  # Заголовок страницы
+        "button_name": "Сохранить изменения",  # Текст на кнопке отправки формы
+    }
+    success_url = reverse_lazy(
+        "products_list"
+    )  # URL для перенаправления после успешного обновления
+
+
+class ProductDeleteView(ProductBaseView, DeleteView):
+    """
+    Представление для удаления товара.
+
+    Отображает форму подтверждения удаления и перенаправляет на список товаров после удаления.
+    """
+
+    template_name = "store_app/product_delete.html"  # Шаблон подтверждения удаления
+    form_class = (
+        ProductDeleteForm  # Форма подтверждения удаления
+    )
+    success_url = reverse_lazy(
+        "products_list"
+    )  # URL для перенаправления после удаления
 
 
 def categories_list(request):
     """
     Отображает список всех категорий товаров.
-
-    Получает все объекты Category из базы данных и передаёт их в шаблон
-    для отображения в виде списка.
-
     Args:
         request (HttpRequest): HTTP‑запрос от клиента.
-
     Returns:
         HttpResponse: Отрендеренный шаблон со списком категорий.
     """
-    categories = Category.objects.all()
+    categories = (
+        Category.objects.all()
+    )  # Получаем все категории из БД
     context = {
-        "categories": categories,
+        "categories": categories,  # Передаём категории в контекст шаблона
     }
     return render(
         request,
@@ -177,30 +155,32 @@ def categories_list(request):
 
 def category_add(request):
     """
-    Обрабатывает добавление новой категории через форму.
-
-    Если метод запроса — POST и форма валидна, сохраняет новую категорию
-    и перенаправляет на страницу списка категорий. В противном случае отображает
-    пустую форму для заполнения.
-
+    Обрабатывает добавление новой категории товаров.
+    При POST‑запросе сохраняет новую категорию, при GET‑запросе отображает пустую форму.
     Args:
         request (HttpRequest): HTTP‑запрос от клиента.
-
     Returns:
-        HttpResponse: Отрендеренный шаблон формы добавления категории или
-        перенаправление на список категорий.
+        HttpResponse: Отрендеренный шаблон формы добавления категории или перенаправление.
     """
     if request.method == "POST":
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("categories_list")
+        form = CategoryForm(
+            request.POST
+        )  # Создаём форму с данными из запроса
+        if (
+            form.is_valid()
+        ):  # Проверяем валидность данных формы
+            form.save()  # Сохраняем новую категорию в БД
+            return redirect(
+                "categories_list"
+            )  # Перенаправляем на список категорий
     else:
-        form = CategoryForm()
+        form = (
+            CategoryForm()
+        )  # Создаём пустую форму для GET‑запроса
     context = {
-        "title": "Добавление новой категории",
-        "button_name": "Добавить категорию",
-        "form": form,
+        "title": "Добавление новой категории",  # Заголовок страницы
+        "button_name": "Добавить категорию",  # Текст на кнопке отправки формы
+        "form": form,  # Передаём форму в контекст
     }
     return render(
         request,
@@ -211,34 +191,36 @@ def category_add(request):
 
 def category_edit(request, category_id):
     """
-    Обрабатывает редактирование существующей категории.
-
-    Получает категорию по ID, отображает форму с её данными. При отправке
-    POST‑запроса с валидными данными сохраняет изменения и перенаправляет
-    на список категорий.
-
+    Обрабатывает редактирование существующей категории товаров.
+    При POST‑запросе обновляет категорию, при GET‑запросе отображает форму с текущими данными.
     Args:
         request (HttpRequest): HTTP‑запрос от клиента.
-        category_id (int): ID редактируемой категории.
-
+        category_id (int): ID категории для редактирования.
     Returns:
-        HttpResponse: Отрендеренный шаблон формы редактирования категории или
-        перенаправление на список категорий.
+        HttpResponse: Отрендеренный шаблон формы редактирования категории или перенаправление.
     """
-    category = get_object_or_404(Category, id=category_id)
+    category = get_object_or_404(
+        Category, id=category_id
+    )  # Получаем категорию или 404
     if request.method == "POST":
         form = CategoryForm(
             request.POST, instance=category
-        )
-        if form.is_valid():
-            form.save()
-            return redirect("categories_list")
+        )  # Создаём форму с данными и экземпляром категории
+        if (
+            form.is_valid()
+        ):  # Проверяем валидность данных формы
+            form.save()  # Сохраняем изменения в БД
+            return redirect(
+                "categories_list"
+            )  # Перенаправляем на список категорий
     else:
-        form = CategoryForm(instance=category)
+        form = CategoryForm(
+            instance=category
+        )  # Создаём форму с текущими данными категории
     context = {
-        "title": "Изменение категории",
-        "button_name": "Сохранить изменения",
-        "form": form,
+        "title": "Изменение категории",  # Заголовок страницы
+        "button_name": "Сохранить изменения",  # Текст на кнопке отправки формы
+        "form": form,  # Передаём форму в контекст
     }
     return render(
         request,
