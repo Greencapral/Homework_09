@@ -2,19 +2,28 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 
+
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
         label="Email",
-        widget=forms.EmailInput(attrs={"class": "form-control", 'placeholder': 'Введите Email'}),
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Введите Email",
+            }
+        ),
     )
+
     class Meta:
         model = get_user_model()
-        fields = ('email', )
+        fields = ("email",)
 
     def clean_email(self):
-        email = self.cleaned_data.get('email').lower()
+        email = self.cleaned_data.get("email").lower()
         UserModel = get_user_model()
         if UserModel.objects.filter(email=email).exists():
-            raise forms.ValidationError("Этот email уже занят")
+            raise forms.ValidationError(
+                "Этот email уже занят"
+            )
         return email

@@ -1,6 +1,3 @@
-__all__ = (
-    'CustomUser',
-
-)
+__all__ = ("CustomUser",)
 
 from .CustomUser import CustomUser

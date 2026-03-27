@@ -1,7 +1,9 @@
-__all__ =(
-    'CustomUserCreationForm',
-    'CustomAuthenticationForm',
+__all__ = (
+    "CustomUserCreationForm",
+    "CustomAuthenticationForm",
 )
 
 from .CustomUserCreationForm import CustomUserCreationForm
-from .CustomAuthenticationForm import CustomAuthenticationForm
+from .CustomAuthenticationForm import (
+    CustomAuthenticationForm,
+)
