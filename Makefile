@@ -8,4 +8,4 @@ pylint:
 	poetry run pylint $(shell git ls-files '*.py')
 
 coverage:
-	poetry run pytest
+	poetry run pytest --cov --cov-branch --cov-report=xml
