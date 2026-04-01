@@ -1,6 +1,6 @@
 .PHONY: setup redis run worker server clean install-uv
 
-setup: install-uv venv uv-sync
+setup: install-uv uv-sync
 
 # Установка uv, если не найден
 install-uv:
@@ -11,15 +11,6 @@ install-uv:
 		echo "uv установлен успешно."; \
 	else \
 		echo "Утилита uv уже установлена."; \
-	fi
-
-# Создание виртуального окружения с помощью uv
-venv:
-	@if [ ! -d "venv" ]; then \
-		echo "Создание виртуального окружения..."; \
-		uv venv venv --python=/opt/hostedtoolcache/Python/3.14.3/x64/bin/python3; \
-	else \
-		echo "Виртуальное окружение уже существует"; \
 	fi
 
 # Синхронизация зависимостей через uv sync
