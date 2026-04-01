@@ -1,35 +1,11 @@
-.PHONY: setup redis run worker server clean install-uv
+test:
+	poetry run pytest
 
-setup: install-uv uv-sync
+server:
+	python manage.py runserver
 
-# Установка uv, если не найден
-install-uv:
-	@if ! command -v uv &> /dev/null; then \
-		echo "Утилита uv не найдена, выполняется установка..."; \
-		curl -LsSf https://astral.sh/uv/install.sh | sh; \
-		export PATH="$HOME/.local/bin:$${PATH}"; \
-		echo "uv установлен успешно."; \
-	else \
-		echo "Утилита uv уже установлена."; \
-	fi
+pylint:
+	poetry run pylint $(shell git ls-files '*.py')
 
-# Синхронизация зависимостей через uv sync
-uv-sync: venv
-	@if [ ! -f "pyproject.toml" ] && [ ! -f "requirements.txt" ]; then \
-		echo "Ошибка: не найден pyproject.toml или requirements.txt"; \
-		exit 1; \
-	fi; \
-	echo "Синхронизация зависимостей с помощью uv sync..."; \
-	uv sync --python venv/bin/python --no-install-workspace --frozen
-
-# Запуск Django development server
-server: uv-sync
-	echo "Запуск Django development server..."; \
-	./venv/bin/python manage.py runserver
-
-# Очистка
-clean:
-	echo "Очистка окружения..."; \
-	pkill -f "python manage.py runserver" 2>/dev/null || true; \
-	rm -rf venv .venv; \
-	echo "Очистка завершена."
+coverage:
+	poetry run pytest
