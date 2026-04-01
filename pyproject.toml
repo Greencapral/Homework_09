@@ -19,3 +19,6 @@ dev = [
 
 [tool.black]
 line-length = 59
+
+[tool.poetry]
+package-mode = false
