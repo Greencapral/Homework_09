@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/github/Greencapral/Homework_09/graph/badge.svg?token=XJ1AW9U8GW)](https://codecov.io/github/Greencapral/Homework_09)
 # Домашнее задание
 
 **Цель:**
